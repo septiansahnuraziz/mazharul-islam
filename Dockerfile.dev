@@ -1,0 +1,42 @@
+FROM golang:1.22.5-alpine AS builder
+
+# Time zone
+RUN apk add --no-cache tzdata
+
+# Set necessary environment variables needed for our image
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+
+# Move to working directory /build
+WORKDIR /build
+
+# Copy and download dependency using go mod
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
+# Copy the code into the container
+COPY . .
+
+# Build the application
+RUN go build -o main main.go
+
+# Move to /dist directory as the place for resulting binary folder
+WORKDIR /dist
+
+# Copy binary from build to main folder
+RUN cp /build/main .
+
+# Build a small image
+FROM alpine:3
+RUN apk add --no-cache ca-certificates tzdata
+COPY --from=builder /build/database/migrations/ /database/migrations/
+COPY --from=builder /dist/main /
+COPY ./.env /.env
+ENV TZ=Asia/Jakarta
+ENV MODE=dev
+
+# Run executable with multiple commands
+CMD ["/bin/ash", "-c", "./main migrate && ./main server"]

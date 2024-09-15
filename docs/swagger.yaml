@@ -1,0 +1,285 @@
+definitions:
+  entity.CursorDirection:
+    enum:
+    - next
+    - prev
+    type: string
+    x-enum-varnames:
+    - CursorDirectionNext
+    - CursorDirectionPrev
+  entity.CursorInfo:
+    properties:
+      count:
+        example: 20
+        type: integer
+      cursor:
+        example: "1696466522533538969"
+        type: string
+      cursorType:
+        allOf:
+        - $ref: '#/definitions/entity.CursorDirection'
+        example: next
+      hasNext:
+        example: true
+        type: boolean
+      hasPrev:
+        example: true
+        type: boolean
+      nextCursor:
+        example: "1695785802835854036"
+        type: string
+      prevCursor:
+        example: "1696415865308136181"
+        type: string
+      size:
+        example: 10
+        type: integer
+    type: object
+  entity.CustomerSortDir:
+    enum:
+    - asc
+    - desc
+    type: string
+    x-enum-varnames:
+    - CustomerSortDirAscending
+    - CustomerSortDirDescending
+  entity.CustomerURLSortBy:
+    enum:
+    - id
+    type: string
+    x-enum-varnames:
+    - CustomerSortByID
+  entity.SwaggerResponseBadRequestDTO:
+    properties:
+      appName:
+        example: Customer Miscellaneous API
+        type: string
+      build:
+        example: "1"
+        type: string
+      data:
+        description: Will return null
+      id:
+        example: 16ad78a0-5f8a-4af0-9946-d21656e718b5
+        type: string
+      message:
+        example: Bad Request
+        type: string
+      version:
+        example: 1.0.0
+        type: string
+    type: object
+  entity.SwaggerResponseInternalServerErrorDTO:
+    properties:
+      appName:
+        example: Customer Miscellaneous API
+        type: string
+      build:
+        example: "1"
+        type: string
+      data:
+        description: Will return null
+      id:
+        example: 16ad78a0-5f8a-4af0-9946-d21656e718b5
+        type: string
+      message:
+        example: Internal Server Error
+        type: string
+      version:
+        example: 1.0.0
+        type: string
+    type: object
+  entity.SwaggerResponseOKDTO:
+    properties:
+      appName:
+        example: Customer Miscellaneous API
+        type: string
+      build:
+        example: "1"
+        type: string
+      data: {}
+      id:
+        example: 16ad78a0-5f8a-4af0-9946-d21656e718b5
+        type: string
+      message:
+        example: Success
+        type: string
+      version:
+        example: 1.0.0
+        type: string
+    type: object
+  entity.SwaggerResponseUnauthorizedDTO:
+    properties:
+      appName:
+        example: Customer Miscellaneous API
+        type: string
+      build:
+        example: "1"
+        type: string
+      data:
+        description: Will return null
+      id:
+        example: 16ad78a0-5f8a-4af0-9946-d21656e718b5
+        type: string
+      message:
+        example: Unauthorized
+        type: string
+      version:
+        example: 1.0.0
+        type: string
+    type: object
+  entity.Users:
+    properties:
+      age:
+        type: integer
+      gender:
+        type: string
+      id:
+        type: integer
+      interest:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      preferences:
+        type: string
+    type: object
+  http.cursorPaginationResponse-entity_Users:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/entity.Users'
+        type: array
+      meta:
+        $ref: '#/definitions/entity.CursorInfo'
+    type: object
+info:
+  contact:
+    name: Eraspace
+    url: eraspace.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+paths:
+  /v1/match/recommendations/user/{id}/:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 'Example: application/json'
+        in: header
+        name: Accept
+        type: string
+      - description: 'Example: application/json'
+        in: header
+        name: Content-Type
+        type: string
+      - description: 'Example: 5d47eb91-bee9-46b8-9104-aea0f40ef1c3'
+        in: header
+        name: Device-Id
+        required: true
+        type: string
+      - description: 'Example: eraspace'
+        in: header
+        name: Source
+        required: true
+        type: string
+      - description: User Id
+        in: path
+        name: id
+        required: true
+        type: string
+      - collectionFormat: csv
+        in: query
+        items:
+          type: integer
+        name: age
+        type: array
+      - description: Optional, will fill with default value 0
+        example: "0"
+        in: query
+        name: cursor
+        type: string
+      - description: Optional, will fill with default value NEXT
+        enum:
+        - next
+        - prev
+        in: query
+        name: cursorDir
+        type: string
+        x-enum-varnames:
+        - CursorDirectionNext
+        - CursorDirectionPrev
+      - in: query
+        name: gender
+        type: string
+      - in: query
+        name: name
+        type: string
+      - description: Optional, will fill with default value 10
+        example: 10
+        in: query
+        name: size
+        type: integer
+      - description: '"id" is the same as "created at"'
+        enum:
+        - id
+        in: query
+        name: sortBy
+        type: string
+        x-enum-varnames:
+        - CustomerSortByID
+      - description: Default value is asc
+        enum:
+        - asc
+        - desc
+        in: query
+        name: sortDir
+        type: string
+        x-enum-varnames:
+        - CustomerSortDirAscending
+        - CustomerSortDirDescending
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/entity.SwaggerResponseOKDTO'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/http.cursorPaginationResponse-entity_Users'
+                  - properties:
+                      data:
+                        items:
+                          $ref: '#/definitions/entity.Users'
+                        type: array
+                    type: object
+                meta:
+                  $ref: '#/definitions/entity.CursorInfo'
+              type: object
+        "400":
+          description: '*Notes: Code data will be return null'
+          schema:
+            $ref: '#/definitions/entity.SwaggerResponseBadRequestDTO'
+        "401":
+          description: '*Notes: Code data will be return null'
+          schema:
+            $ref: '#/definitions/entity.SwaggerResponseUnauthorizedDTO'
+        "500":
+          description: '*Notes: Code data will be return null'
+          schema:
+            $ref: '#/definitions/entity.SwaggerResponseInternalServerErrorDTO'
+      summary: Endpoint for get list recommendations
+      tags:
+      - user
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
